@@ -26,7 +26,7 @@ Once you’ve designed your function, test it by calling it with small values fo
 
 import sys
 
-recursionlimit = sys.getrecursionlimit() - 100
+recursionlimit = 200 #sys.getrecursionlimit()
 
 def ackermann(m: int, n: int):
     if n > recursionlimit:
