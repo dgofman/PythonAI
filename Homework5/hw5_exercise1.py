@@ -117,7 +117,7 @@ def main(argv):
     sw.develop()
 
     plt.plot(0, 0, color=sw.transitionLineColor, label='Transition Slide') #legend item
-    plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='1. Transition Point')
+    plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='Transition Point')
 
     plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
     plt.tight_layout()
