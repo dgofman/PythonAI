@@ -24,6 +24,17 @@ add O(n) additional slides so that if i is in the first half and j is in the sec
 get from i to j using only two slides.
 (c) Using part (b), write a divide-and-conquer algorithm that takes as input
 the number of landings n and outputs the list of all the slides used by your attraction.
+
+>> python hw5_exercise1.py
+
+Transition Slide: 5
+Direct Slides: [Slide 1 -> 2, Slide 2 -> 3, Slide 3 -> 7, Slide 4 -> 6, Slide 5 -> 5, Slide 6 -> 8, Slide 7 -> 10, Slide 8 -> 10, Slide 9 -> 10, Slide 10 -> 10]
+
+>> python hw5_exercise1.py 5
+
+Transition Slide: 3
+Direct Slides: [Slide 1 -> 4, Slide 2 -> 5, Slide 3 -> 3, Slide 4 -> 5, Slide 5 -> 5]
+
 '''
 
 from math import sqrt
@@ -111,7 +122,7 @@ def main(argv):
     sw = SlideWorld()
     if len(argv) > 1:
         sw.maxSlides = int(argv[1])
-    if len(argv) > 1:
+    if len(argv) > 2:
         sw.maxSquareFeet = int(argv[2])
 
     sw.design()
@@ -120,6 +131,7 @@ def main(argv):
     plt.plot(0, 0, color=sw.transitionLineColor, label='Transition Slide') #legend item
     plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='Transition Point')
 
+    plt.title('SlideWorld - {:,} ft²'.format(sw.maxSquareFeet**2))
     plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
     plt.tight_layout()
     plt.savefig('slide_world.png', dpi=150)
