@@ -66,7 +66,6 @@ class SlideWorld():
         self.slideColor = 'y'
         self.transitionSlideColor = 'r'
         self.transitionLineColor = 'y'
-        self.directLineColor = 'b'
         self.directSlides = []
     
     #create slides
