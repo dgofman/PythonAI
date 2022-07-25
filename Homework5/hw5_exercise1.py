@@ -162,19 +162,20 @@ def main(argv):
     sw.design()
     sw.develop()
 
-    plt.plot(0, 0, color=sw.transitionLineColor, label='Transition Slide') #legend item
-    plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='Transition Point')
-
-    plt.title('SlideWorld - {:,} ft²'.format(sw.maxFeet**2))
-    plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
-    plt.tight_layout()
-    plt.savefig('slide_world.png', dpi=150)
-    
     print('Direct Slides:')
     print(sw.directSlides)
     print('Transition Slides:')
     for i in range(ceil(len(sw.slides) / 2) - 1):
-        print(sorted(sw.slides[i].transitions))
+        transitions = sorted(sw.slides[i].transitions)
+        print(transitions)
+        plt.plot(0, 0, color=sw.transitionLineColor, label=transitions) #legend item
+
+    plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='Transition Point') #legend item
+
+    plt.title('SlideWorld - {:,} ft²'.format(sw.maxFeet**2))
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.tight_layout()
+    plt.savefig('slide_world.png', dpi=150)
 
 if __name__ == '__main__':
     main(argv)
