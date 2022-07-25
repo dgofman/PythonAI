@@ -25,10 +25,9 @@ get from i to j using only two slides.
 (c) Using part (b), write a divide-and-conquer algorithm that takes as input
 the number of landings n and outputs the list of all the slides used by your attraction.
 
->> python hw5_exercise1.py
-
+>> python hw5_exercise1.py   
 Direct Slides:
-[1 -> 3, 2 -> 4, 3 -> 7, 4 -> 6, 6 -> 7, 7 -> 9, 8 -> 9]
+[1 -> 3, 3 -> 4, 6 -> 7, 7 -> 8, 8 -> 9]
 Transition Slides:
 ['1 -> 5 -> 6', '1 -> 5 -> 7', '1 -> 5 -> 8', '1 -> 5 -> 9']
 ['2 -> 5 -> 6', '2 -> 5 -> 7', '2 -> 5 -> 8', '2 -> 5 -> 9']
@@ -38,15 +37,15 @@ Transition Slides:
 >> python hw5_exercise1.py 5
 
 Direct Slides:
-[1 -> 2, 2 -> 5, 4 -> 5]
+[1 -> 2, 4 -> 5]
 Transition Slides:
 ['1 -> 3 -> 4', '1 -> 3 -> 5']
 ['2 -> 3 -> 4', '2 -> 3 -> 5']
 
->> python hw5_exercise1.py 5 50 
+>> python python hw5_exercise1.py 5 50
 
 Direct Slides:
-[1 -> 2, 2 -> 4, 4 -> 5]
+[1 -> 2, 4 -> 5]
 Transition Slides:
 ['1 -> 3 -> 4', '1 -> 3 -> 5']
 ['2 -> 3 -> 4', '2 -> 3 -> 5']
