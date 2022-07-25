@@ -108,8 +108,7 @@ class SlideWorld():
                         s1.directSlide = s2
 
                     if i < self.transitionSlide.level and j + 2 > self.transitionSlide.level:
-                        transition = '{} -> {} -> {}'.format(i + 1, self.transitionSlide.level, min(j + 2, n))
-                        s1.transitions.add(transition)
+                        s1.transitions.add(self.transitionPath(i + 1, min(j + 2, n)))
 
     #draw slides
     def develop(self):
@@ -118,7 +117,10 @@ class SlideWorld():
                 plt.plot([s.x, self.transitionSlide.x], [s.y, self.transitionSlide.y], color=self.transitionLineColor, alpha=0.3)
                 plt.scatter(s.x, s.y, s=200, color=self.slideColor)
 
-            if s.directSlide != s:
+            path = self.transitionPath(s.level, s.directSlide.level)
+            if path in s.transitions:
+                s.directSlide = None #restrict direct path if you can use transition
+            elif s.directSlide != s:
                 self.directSlides.append(s)
                 plt.plot([s.x, s.directSlide.x], [s.y, s.directSlide.y], alpha=0.3, label=s.__str__())
 
@@ -131,6 +133,9 @@ class SlideWorld():
 
     def find_distance(self, x1, y1, x2, y2):
         return sqrt((x1 - x2)**2 + (y1 - y2)**2)
+
+    def transitionPath(self, beginLevel, endLevel):
+        return '{} -> {} -> {}'.format(beginLevel, self.transitionSlide.level, endLevel)
 
 
 class Slide():
