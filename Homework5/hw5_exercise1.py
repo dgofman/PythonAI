@@ -63,8 +63,8 @@ class SlideWorld():
         self.maxSlides = 9
         self.maxFeet = 100
         self.transitionSlide = None
-        self.slideColor = 'y'
-        self.transitionSlideColor = 'r'
+        self.slideColor = 'pink'
+        self.transitionSlideColor = 'red'
         self.transitionLineColor = 'y'
         self.directSlides = []
     
