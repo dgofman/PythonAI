@@ -35,10 +35,10 @@ Direct Slides: [Slide 1 -> 3, Slide 2 -> 4, Slide 3 -> 4, Slide 4 -> 6, , Slide 
 Transition Slide: 3
 Direct Slides: [Slide 1 -> 4, Slide 2 -> 4, , Slide 4 -> 5, ]
 
->> python hw5_exercise1.py 3 10
+>> python hw5_exercise1.py 5 50 
 
-Transition Slide: 2
-Direct Slides: [Slide 1 -> 3, , ]
+Transition Slide: 3
+Direct Slides: [Slide 1 -> 2, Slide 2 -> 4, , Slide 4 -> 5, ]
 
 '''
 
