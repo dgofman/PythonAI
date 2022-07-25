@@ -27,18 +27,31 @@ the number of landings n and outputs the list of all the slides used by your att
 
 >> python hw5_exercise1.py
 
-Transition Slide: 5
-Direct Slides: [Slide 1 -> 3, Slide 2 -> 4, Slide 3 -> 4, Slide 4 -> 6, , Slide 6 -> 7, Slide 7 -> 10, Slide 8 -> 10, Slide 9 -> 10, ]
+Direct Slides:
+[1 -> 3, 2 -> 4, 3 -> 7, 4 -> 6, 6 -> 7, 7 -> 9, 8 -> 9]
+Transition Slides:
+['1 -> 5 -> 6', '1 -> 5 -> 7', '1 -> 5 -> 8', '1 -> 5 -> 9']
+['2 -> 5 -> 6', '2 -> 5 -> 7', '2 -> 5 -> 8', '2 -> 5 -> 9']
+['3 -> 5 -> 6', '3 -> 5 -> 7', '3 -> 5 -> 8', '3 -> 5 -> 9']
+['4 -> 5 -> 6', '4 -> 5 -> 7', '4 -> 5 -> 8', '4 -> 5 -> 9']
 
 >> python hw5_exercise1.py 5
 
-Transition Slide: 3
-Direct Slides: [Slide 1 -> 4, Slide 2 -> 4, , Slide 4 -> 5, ]
+Direct Slides:
+[1 -> 2, 2 -> 5, 4 -> 5]
+Transition Slides:
+['1 -> 3 -> 4', '1 -> 3 -> 5']
+['2 -> 3 -> 4', '2 -> 3 -> 5']
 
 >> python hw5_exercise1.py 5 50 
 
 Transition Slide: 3
-Direct Slides: [Slide 1 -> 2, Slide 2 -> 4, , Slide 4 -> 5, ]
+
+Direct Slides:
+[1 -> 2, 2 -> 4, 4 -> 5]
+Transition Slides:
+['1 -> 3 -> 4', '1 -> 3 -> 5']
+['2 -> 3 -> 4', '2 -> 3 -> 5']
 
 '''
 
@@ -50,13 +63,14 @@ import matplotlib.pyplot as plt #Run python -m pip install matplotlib
 class SlideWorld():
     def __init__(self):
         self.slides = []
-        self.maxSlides = 10
+        self.maxSlides = 9
         self.maxFeet = 100
         self.transitionSlide = None
         self.slideColor = 'y'
         self.transitionSlideColor = 'r'
         self.transitionLineColor = 'y'
         self.directLineColor = 'b'
+        self.directSlides = []
     
     #create slides
     def design(self):
@@ -80,19 +94,24 @@ class SlideWorld():
         self.slides.sort(key = lambda s: [s.x, s.y])
         n = len(self.slides) + 1
         #move the transition slide to the middle
-        self.slides.insert(ceil(n / 2) - 1, self.transitionSlide)
+        self.transitionSlide.level = ceil(n / 2)
+        self.slides.insert(self.transitionSlide.level - 1, self.transitionSlide)
         
         #divide-and-conquer algorithm to find the distance to the nearest sibling
         for i in range(n):
             s1 = self.slides[i]
-            s1.level = i + 1
             if s1 != self.transitionSlide:
+                s1.level = i + 1
                 for j in range(i + 1, n):
                     s2 = self.slides[j]
                     distance = self.find_distance(s1.x, s1.y, s2.x, s2.y)
                     if distance < s1.minimum and s2 != self.transitionSlide:
                         s1.minimum = distance
                         s1.directSlide = s2
+
+                    if i < self.transitionSlide.level and j + 2 > self.transitionSlide.level:
+                        transition = '{} -> {} -> {}'.format(i + 1, self.transitionSlide.level, min(j + 2, n))
+                        s1.transitions.add(transition)
 
     #draw slides
     def develop(self):
@@ -102,6 +121,7 @@ class SlideWorld():
                 plt.scatter(s.x, s.y, s=200, color=self.slideColor)
 
             if s.directSlide != s:
+                self.directSlides.append(s)
                 plt.plot([s.x, s.directSlide.x], [s.y, s.directSlide.y], alpha=0.3, label=s.__str__())
 
             plt.annotate(s.level,
@@ -121,16 +141,15 @@ class Slide():
         self.x = x
         self.y = y
         self.directSlide = self
+        self.transitions = set()
         self.minimum = float('inf')
-    
+
     def __str__(self):
-        if self.level != self.directSlide.level:
-            return 'Slide {} -> {}'.format(self.level, self.directSlide.level)
-        return ''
+        return '{} -> {}'.format(self.level, self.directSlide.level)
     
     def __repr__(self):
         return str(self)
-
+    
 def main(argv):
     sw = SlideWorld()
     if len(argv) > 1:
@@ -148,8 +167,12 @@ def main(argv):
     plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
     plt.tight_layout()
     plt.savefig('slide_world.png', dpi=150)
-    print('Transition Slide:', sw.transitionSlide.level)
-    print('Direct Slides:', sw.slides)
+    
+    print('Direct Slides:')
+    print(sw.directSlides)
+    print('Transition Slides:')
+    for i in range(ceil(len(sw.slides) / 2) - 1):
+        print(sorted(sw.slides[i].transitions))
 
 if __name__ == '__main__':
     main(argv)
