@@ -42,7 +42,7 @@ Transition Slides:
 ['1 -> 3 -> 4', '1 -> 3 -> 5']
 ['2 -> 3 -> 4', '2 -> 3 -> 5']
 
->> python python hw5_exercise1.py 5 50
+>> python hw5_exercise1.py 5 50
 
 Direct Slides:
 [1 -> 2, 4 -> 5]
