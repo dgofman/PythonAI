@@ -45,8 +45,6 @@ Transition Slides:
 
 >> python hw5_exercise1.py 5 50 
 
-Transition Slide: 3
-
 Direct Slides:
 [1 -> 2, 2 -> 4, 4 -> 5]
 Transition Slides:
