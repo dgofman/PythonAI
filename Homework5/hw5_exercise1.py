@@ -49,7 +49,7 @@ class SlideWorld():
         xs = np.random.randint(0, self.maxSquareFeet, size=self.maxSlides)
         ys = np.random.randint(0, self.maxSquareFeet, size=self.maxSlides)
         for i in range(0, self.maxSlides):
-            slide = Slide(i + 1, xs[i], ys[i])
+            slide = Slide(xs[i], ys[i])
             #find the distance to the nearest midpoint
             distance = self.find_distance(slide.x, slide.y, midPoint, midPoint)
             if distance < nearest:
@@ -63,6 +63,7 @@ class SlideWorld():
         self.slides.sort(key = lambda s: [s.x, s.y])
         for i in range(n):
             s1 = self.slides[i]
+            s1.index = i + 1
             if s1 != self.transitionSlide:
                 for j in range(i + 1, n):
                     s2 = self.slides[j]
@@ -93,8 +94,8 @@ class SlideWorld():
 
 
 class Slide():
-    def __init__(self, index, x, y):
-        self.index = index
+    def __init__(self, x, y):
+        self.index = None
         self.x = x
         self.y = y
         self.directSlide = self
