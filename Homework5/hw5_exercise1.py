@@ -28,16 +28,21 @@ the number of landings n and outputs the list of all the slides used by your att
 >> python hw5_exercise1.py
 
 Transition Slide: 5
-Direct Slides: [Slide 1 -> 2, Slide 2 -> 3, Slide 3 -> 7, Slide 4 -> 6, Slide 5 -> 5, Slide 6 -> 8, Slide 7 -> 10, Slide 8 -> 10, Slide 9 -> 10, Slide 10 -> 10]
+Direct Slides: [Slide 1 -> 3, Slide 2 -> 4, Slide 3 -> 4, Slide 4 -> 6, , Slide 6 -> 7, Slide 7 -> 10, Slide 8 -> 10, Slide 9 -> 10, ]
 
 >> python hw5_exercise1.py 5
 
 Transition Slide: 3
-Direct Slides: [Slide 1 -> 4, Slide 2 -> 5, Slide 3 -> 3, Slide 4 -> 5, Slide 5 -> 5]
+Direct Slides: [Slide 1 -> 4, Slide 2 -> 4, , Slide 4 -> 5, ]
+
+>> python hw5_exercise1.py 3 10
+
+Transition Slide: 2
+Direct Slides: [Slide 1 -> 3, , ]
 
 '''
 
-from math import sqrt
+from math import sqrt, ceil
 from sys import argv
 import numpy as np
 import matplotlib.pyplot as plt #Run python -m pip install matplotlib
@@ -46,7 +51,8 @@ class SlideWorld():
     def __init__(self):
         self.slides = []
         self.maxSlides = 10
-        self.maxSquareFeet = 100
+        self.maxFeet = 100
+        self.transitionSlide = None
         self.slideColor = 'y'
         self.transitionSlideColor = 'r'
         self.transitionLineColor = 'y'
@@ -54,27 +60,32 @@ class SlideWorld():
     
     #create slides
     def design(self):
-        midPoint = self.maxSquareFeet / 2
+        midPoint = self.maxFeet / 2
         nearest = float('inf')
 
-        xs = np.random.randint(0, self.maxSquareFeet, size=self.maxSlides)
-        ys = np.random.randint(0, self.maxSquareFeet, size=self.maxSlides)
+        xs = np.random.randint(0, self.maxFeet, size=self.maxSlides)
+        ys = np.random.randint(0, self.maxFeet, size=self.maxSlides)
         for i in range(0, self.maxSlides):
             slide = Slide(xs[i], ys[i])
             #find the distance to the nearest midpoint
             distance = self.find_distance(slide.x, slide.y, midPoint, midPoint)
             if distance < nearest:
+                if self.transitionSlide:
+                    self.slides.append(self.transitionSlide)
                 nearest = distance
                 self.transitionSlide = slide
-            self.slides.append(slide)
-
+            else:
+                self.slides.append(slide)
+        
+        self.slides.sort(key = lambda s: [s.x, s.y])
+        n = len(self.slides) + 1
+        #move the transition slide to the middle
+        self.slides.insert(ceil(n / 2) - 1, self.transitionSlide)
         
         #divide-and-conquer algorithm to find the distance to the nearest sibling
-        n = len(self.slides)
-        self.slides.sort(key = lambda s: [s.x, s.y])
         for i in range(n):
             s1 = self.slides[i]
-            s1.index = i + 1
+            s1.level = i + 1
             if s1 != self.transitionSlide:
                 for j in range(i + 1, n):
                     s2 = self.slides[j]
@@ -93,7 +104,7 @@ class SlideWorld():
             if s.directSlide != s:
                 plt.plot([s.x, s.directSlide.x], [s.y, s.directSlide.y], alpha=0.3, label=s.__str__())
 
-            plt.annotate(s.index,
+            plt.annotate(s.level,
                     (s.x, s.y), # these are the coordinates to position the label
                     textcoords='offset points', # how to position the text
                     xytext=(0, 0), # distance from text to points (x,y)
@@ -106,14 +117,16 @@ class SlideWorld():
 
 class Slide():
     def __init__(self, x, y):
-        self.index = None
+        self.level = None
         self.x = x
         self.y = y
         self.directSlide = self
         self.minimum = float('inf')
     
     def __str__(self):
-        return 'Slide {} -> {}'.format(self.index, self.directSlide.index)
+        if self.level != self.directSlide.level:
+            return 'Slide {} -> {}'.format(self.level, self.directSlide.level)
+        return ''
     
     def __repr__(self):
         return str(self)
@@ -123,7 +136,7 @@ def main(argv):
     if len(argv) > 1:
         sw.maxSlides = int(argv[1])
     if len(argv) > 2:
-        sw.maxSquareFeet = int(argv[2])
+        sw.maxFeet = int(argv[2])
 
     sw.design()
     sw.develop()
@@ -131,11 +144,11 @@ def main(argv):
     plt.plot(0, 0, color=sw.transitionLineColor, label='Transition Slide') #legend item
     plt.scatter(sw.transitionSlide.x, sw.transitionSlide.y, s=200, color=sw.transitionSlideColor, label='Transition Point')
 
-    plt.title('SlideWorld - {:,} ft²'.format(sw.maxSquareFeet**2))
+    plt.title('SlideWorld - {:,} ft²'.format(sw.maxFeet**2))
     plt.legend(bbox_to_anchor=(1, 1), loc='upper left')
     plt.tight_layout()
     plt.savefig('slide_world.png', dpi=150)
-    print('Transition Slide:', sw.transitionSlide.index)
+    print('Transition Slide:', sw.transitionSlide.level)
     print('Direct Slides:', sw.slides)
 
 if __name__ == '__main__':
