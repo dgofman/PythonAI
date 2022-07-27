@@ -25,11 +25,12 @@ get from i to j using only two slides.
 (c) Using part (b), write a divide-and-conquer algorithm that takes as input
 the number of landings n and outputs the list of all the slides used by your attraction.
 
->> python hw5_exercise2.py   
+>> python hw5_exercise2.py
+
 Direct Slides:
 ['1 -> 2', '2 -> 3', '3 -> 4', '4 -> 5', '5 -> 6', '6 -> 7', '7 -> 8']
 Transition Slides:
-['1 -> 5', '5 -> 7', '1 -> 3', '2 -> 5', '5 -> 8', '3 -> 5']
+['1 -> 4', '1 -> 5', '2 -> 5', '3 -> 5', '5 -> 7', '5 -> 8']
 Number of points: 8  Total slides: 13
 
 >> python hw5_exercise2.py 9
@@ -37,9 +38,8 @@ Number of points: 8  Total slides: 13
 Direct Slides:
 ['1 -> 2', '2 -> 3', '3 -> 4', '4 -> 5', '5 -> 6', '6 -> 7', '7 -> 8', '8 -> 9']
 Transition Slides:
-['1 -> 5', '5 -> 7', '1 -> 3', '6 -> 9', '2 -> 5', '5 -> 8', '3 -> 5', '5 -> 9']      
+['1 -> 4', '1 -> 5', '2 -> 5', '3 -> 5', '5 -> 7', '5 -> 8', '5 -> 9', '6 -> 9']      
 Number of points: 9  Total slides: 16
-
 '''
 
 from math import floor 
@@ -84,7 +84,7 @@ class SlideWorld():
                 self.addTransition(s1, self.slides[mid + 2 + i])
 
             
-            for j in range(index1 + 2, mid - 1, 2):
+            for j in range(index1 + 3, mid, 3):
                 #find indirect slides on the left
                 self.addTransition(self.slides[index1], self.slides[j])
 
