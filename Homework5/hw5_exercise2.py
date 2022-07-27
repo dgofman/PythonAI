@@ -112,13 +112,14 @@ class SlideWorld():
                     ha='center',
                     va='center')
 
+        self.transitionSlides = sorted(self.transitionSlides, key=lambda s: (s[0].level, s[1].level))
         for slides in self.transitionSlides:
             s1 = slides[0]
             s2 = slides[1]
             if s1.x == s2.x:
                 shift = 5
                 if s2.level > mid + 2:
-                    shift = -5
+                    shift = -10
                 plt.plot([s1.x, s2.x - shift, s2.x], [s1.y, s1.y + 5, s2.y], color=self.transitionLineColor, alpha=0.3, label='{} -> {}'.format(s1.level, s2.level))
             else:
                 plt.plot([s1.x, s2.x], [s1.y, s2.y], color=self.transitionLineColor, alpha=0.3, label='{} -> {}'.format(s1.level, s2.level))
@@ -165,7 +166,7 @@ def main(argv):
 
     print('Number of points:', sw.maxSlides, ' Total slides:', len(sw.directSlides) + len(sw.transitionSlides))
 
-    plt.axis([0, 40, 0, sw.maxSlides / 2 * 10 + 20])   
+    plt.axis([0, 50, 0, sw.maxSlides / 2 * 10 + 20])   
     plt.title('SlideWorld')
     plt.legend(bbox_to_anchor=(1, 1), ncol=2)
     plt.tight_layout()
