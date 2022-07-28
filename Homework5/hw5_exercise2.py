@@ -47,9 +47,9 @@ from sys import argv
 import matplotlib.pyplot as plt #Run python -m pip install matplotlib
 
 class SlideWorld():
-    def __init__(self):
+    def __init__(self, nodes):
         self.slides = []
-        self.maxSlides = 8
+        self.nodes = nodes
         self.slideColor = 'pink'
         self.transitionSlideColor = 'red'
         self.transitionLineColor = 'y'
@@ -71,7 +71,7 @@ class SlideWorld():
             s2.directSlide = self.slides[index1 + 1]
             self.directSlides.insert(i, s2)
 
-            if index2 + 1 < self.maxSlides:
+            if index2 + 1 < self.nodes:
                 s3.directSlide = self.slides[index2 + 1]
                 #add related slides on the right
                 self.directSlides.append(s3)
@@ -79,7 +79,7 @@ class SlideWorld():
             #direct slides to transition point (left)
             self.addTransition(s2, s1)
             
-            if i < mid - 1 and mid + 2 + i < self.maxSlides:
+            if i < mid - 1 and mid + 2 + i < self.nodes:
                 #slides from transition point (right)
                 self.addTransition(s1, self.slides[mid + 2 + i])
 
@@ -88,8 +88,8 @@ class SlideWorld():
                 #find indirect slides on the left
                 self.addTransition(self.slides[index1], self.slides[j])
 
-            for j in range(index2 + 3, self.maxSlides, 3):
-                if j + 1 < self.maxSlides:
+            for j in range(index2 + 3, self.nodes, 3):
+                if j + 1 < self.nodes:
                     #find indirect slides on the right
                     self.addTransition(self.slides[index2 + 1], self.slides[j + 1])
 
@@ -136,17 +136,14 @@ class Slide():
     
     def __repr__(self):
         return str(self)
-    
-def main(argv):
-    #create a theme park, 
-    sw = SlideWorld()
-    if len(argv) > 1:
-        sw.maxSlides = int(argv[1])
 
-    mid = floor(sw.maxSlides / 2)
+def init(nodes):
+    #create a theme park, 
+    sw = SlideWorld(nodes)
+    mid = floor(nodes / 2)
 
     #dynamically create left and right slides
-    for i in range(0, sw.maxSlides):
+    for i in range(0, nodes):
         x = 10
         y = i
         if i > mid - 1:
@@ -156,6 +153,15 @@ def main(argv):
         sw.slides.append(s)
     
     sw.design(mid)
+    return sw
+    
+def main(argv):
+    nodes = 8 #14
+    if len(argv) > 1:
+        nodes = int(argv[1])
+    
+    sw = init(nodes)
+    mid = floor(nodes / 2)
     sw.develop(mid)
 
     print('Direct Slides:')
@@ -164,9 +170,9 @@ def main(argv):
     print('Transition Slides:')
     print(['{} -> {}'.format(s[0].level, s[1].level) for s in sw.transitionSlides])
 
-    print('Number of points:', sw.maxSlides, ' Total slides:', len(sw.directSlides) + len(sw.transitionSlides))
+    print('Number of points:', nodes, ' Total slides:', len(sw.directSlides) + len(sw.transitionSlides))
 
-    plt.axis([0, 50, 0, sw.maxSlides / 2 * 10 + 20])   
+    plt.axis([0, 50, 0, nodes / 2 * 10 + 20])   
     plt.title('SlideWorld')
     plt.legend(bbox_to_anchor=(1, 1), ncol=2)
     plt.tight_layout()
