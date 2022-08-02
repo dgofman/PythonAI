@@ -1,7 +1,8 @@
 # docker image build -t python4ai-2022-project .
-# docker rm  python4ai
-# docker run --name python4ai  python4ai-2022-project
-# or docker run -d --name python4ai  python4ai-2022-project
+# docker rm python4ai
+# docker run --name python4ai python4ai-2022-project
+# or 
+# docker run --name python4ai dgofman/python4ai-2022-project > qin790_output.txt
 
 FROM continuumio/miniconda3
 
