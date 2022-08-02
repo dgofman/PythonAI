@@ -55,27 +55,25 @@ def main():
     #compare my keys agains Glen's output
     for key in words1.keys():
         if key in words3:
-            if words1[key] != words3[key]:
-                print("1. Number of frequencies for key:", key, "(mine#):", words1[key], "Glen's#:", words3[key])
             words3.pop(key)
         else:
-            print("2. Missing key in Glen's output file:", key)
+            print("1. Missing key in Glen's output file:", key)
 
     print()
     for key in words3.keys():
-        print("3. Missing key in my output file:", key)
+        print("2. Missing key in my output file:", key)
 
     for key in words2.keys():
         if key in words4:
             if words2[key] != words4[key]:
-                print("4. Number of frequencies for key:", key, "(mine#):", words2[key], "Glen's#:", words4[key])
+                print("3. Number of frequencies for key:", '"' + key + '"', ", (mine#):", words2[key], "Glen's#:", words4[key])
             words4.pop(key)
         else:
-            print("5. Missing key in Glen's output file:", key)
+            print("4. Missing key in Glen's output file:", key)
 
     print()
     for key in words4.keys():
-        print("6. Missing key in my output file:", key)
+        print("5. Missing key in my output file:", key)
 
 
 if __name__ == "__main__":
