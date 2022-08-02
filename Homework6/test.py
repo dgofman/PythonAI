@@ -56,7 +56,7 @@ def main():
     for key in words1.keys():
         if key in words3:
             if words1[key] != words3[key]:
-                print("1. Number of frequencies: (mine)", words1[key], "Glen's:", words3[key])
+                print("1. Number of frequencies for key:", key, "(mine#):", words1[key], "Glen's#:", words3[key])
             words3.pop(key)
         else:
             print("2. Missing key in Glen's output file:", key)
@@ -68,7 +68,7 @@ def main():
     for key in words2.keys():
         if key in words4:
             if words2[key] != words4[key]:
-                print("4. Number of frequencies: (mine)", words2[key], "Glen's:", words4[key])
+                print("4. Number of frequencies for key:", key, "(mine#):", words2[key], "Glen's#:", words4[key])
             words4.pop(key)
         else:
             print("5. Missing key in Glen's output file:", key)
