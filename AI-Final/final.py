@@ -1,4 +1,3 @@
-
 from datetime import datetime
 from time import mktime
 import pandas as pd
@@ -41,6 +40,7 @@ print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(rf
 
 # Visualising the Random Forest Regression results
 x_ax = range(len(y_test))
+plt.figure(figsize=(25, 10))
 plt.plot(x_ax, y_test, linewidth=1, label="original")
 plt.plot(x_ax, predictions, linewidth=1.1, label="predicted")
 plt.title("y-test and y-predicted data")
