@@ -94,13 +94,13 @@ plt.title('Wind predicted data')
 plt.xlabel('Timestamp')
 
 ax.set_ylabel('Wind Direction')
-ax.plot(x_ax, y2_values, '-c', linewidth=1, label='Original Wind Direction')
-ax.plot(x_ax, y4_values, '-r', linewidth=1.1, label='Predicted Wind Direction')
+ax.plot(x_ax, y2_values, 'bo', linewidth=1, label='Original Wind Direction')
+ax.plot(x_ax, y4_values, 'co', linewidth=1.1, label='Predicted Wind Direction')
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{}'.format(compasValue(y))))
 
 ax2.set_ylabel('Wind Speed')
-ax2.plot(x_ax, y1_values, 'bo', linewidth=1, label='Original Wind Speed')
-ax2.plot(x_ax, y3_values, 'go', linewidth=1.1, label='Predicted Wind Speed')
+ax2.plot(x_ax, y1_values, '-g', linewidth=1, label='Original Wind Speed')
+ax2.plot(x_ax, y3_values, '-m', linewidth=1.1, label='Predicted Wind Speed')
 ax2.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{:.0f} mph'.format(y)))
 
 ax2.legend(loc=1, fancybox=True, shadow=True)
