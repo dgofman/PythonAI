@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
 from sys import modules
+from math import floor
 from time import mktime
 from datetime import datetime
 from sklearn.model_selection import train_test_split
@@ -20,10 +21,11 @@ data.describe()
 data = pd.get_dummies(data)
 data.head(5)
 
-labels = np.array(data['Temperature'])
-data = data.drop('Temperature', axis=1)
+labels = data[['Wind Speed', 'Wind Direction']]
+data = data.drop('Wind Speed', axis=1)
+data = data.drop('Wind Direction', axis=1)
 data_list = list(data.columns)
-print('Temperature (Y):', labels)
+print('Wind (Y):', labels.values)
 print('Columns (X):', data_list)
 
 X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.30,random_state=4)
@@ -42,7 +44,7 @@ print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(rf
 
 # Visualising the Random Forest Regression results
 
-# sort values by timestamp begin
+# sort values begin
 order_list= []
 keys = X_test['Timestamp'].keys()
 for i, k in enumerate(keys):
@@ -52,12 +54,16 @@ order_list = sorted(order_list, key=lambda item: item['value'])
 x_values = []
 y1_values = []
 y2_values = []
+y3_values = []
+y4_values = []
 for item in order_list:
     index = item['index']
     x_values.append(X_test['Timestamp'].values[index])
-    y1_values.append(y_test[index]) #test data 
-    y2_values.append(predictions[index]) #predicted data
-# sort values by timestamp end
+    y1_values.append(y_test['Wind Speed'].values[index])
+    y2_values.append(y_test['Wind Direction'].values[index])
+    y3_values.append(predictions[index][0])
+    y4_values.append(predictions[index][1])
+# sort values end
 
 def format(x, _):
     index = int(x)
@@ -67,23 +73,46 @@ def format(x, _):
         ts = x_values[-1]
     return datetime.fromtimestamp(ts).strftime('%m/%d/%Y, %H:%M')
 
+def compasValue(y):
+    return compass[y - (y % 45)] if y > 45 else 'N'
+
+def cursor_annotations(sel):
+    sel.annotation.get_bbox_patch().set(alpha=0.9)
+    sel.annotation.set(
+                    text=sel.artist.get_label() + '\nTimestamp:' + 
+                    datetime.fromtimestamp(x_values[floor(sel.target[0])]).strftime('%m/%d/%Y, %H:%M') +
+                    ('\nWind Speed: {:.0f} mph'.format(sel.target[1]) if 'Speed' in sel.artist.get_label() else
+                    '\nWind Direction: {}'.format(compasValue(sel.target[1]))))
+    
+
 length = len(x_values)
 x_ax = range(length)
-plt.figure(figsize=(25, 10))
+fig, ax = plt.subplots(figsize = (25, 10))
+ax2 = ax.twinx()
 plt.xlim(0, length)
-plt.plot(x_ax, y1_values, linewidth=1, label='Original')
-plt.plot(x_ax, y2_values, linewidth=1.1, label='Predicted')
-plt.title('Temperature predicted data')
+plt.title('Wind predicted data')
 plt.xlabel('Timestamp')
-plt.ylabel('Temperature')
-plt.legend(loc='best',fancybox=True, shadow=True)
 
-ax = plt.gca()
+ax.set_ylabel('Wind Direction')
+ax.plot(x_ax, y2_values, '-c', linewidth=1, label='Original Wind Direction')
+ax.plot(x_ax, y4_values, '-r', linewidth=1.1, label='Predicted Wind Direction')
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{}'.format(compasValue(y))))
+
+ax2.set_ylabel('Wind Speed')
+ax2.plot(x_ax, y1_values, 'bo', linewidth=1, label='Original Wind Speed')
+ax2.plot(x_ax, y3_values, 'go', linewidth=1.1, label='Predicted Wind Speed')
+ax2.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{:.0f} mph'.format(y)))
+
+ax2.legend(loc=1, fancybox=True, shadow=True)
+ax.legend(loc=2, fancybox=True, shadow=True)
+
+compass = {
+    0: 'N', 45: 'NE', 90: 'E', 135: 'SE', 180: 'S', 225: 'SW', 270: 'W', 315: 'NW', 360: 'N'
+}
 ticks_loc = ax.get_xticks()
 ax.xaxis.set_major_locator(ticker.FixedLocator(ticks_loc))
 ax.set_xticklabels(ticks_loc, rotation=45, ha='right', rotation_mode='anchor')
 ax.xaxis.set_major_formatter(ticker.FuncFormatter(format))
-ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{:.1f}°F'.format(y)))
 
 plt.grid(True)
 plt.tight_layout()
@@ -92,11 +121,5 @@ plt.tight_layout()
 if not 'mplcursors' in modules.keys():
     from mplcursors import cursor 
     tooltip = cursor(hover=True)
-    tooltip.connect(
-        'add', lambda sel: sel.annotation.set(
-                    text=sel.artist.get_label() + '\n' + 
-                    '{}'.format(ax.format_coord(*sel.target)
-                        .replace('x=', 'Timestamp: ')
-                        .replace('y=', '\nTemperature: '))   
-        ))
+    tooltip.connect('add', cursor_annotations)
     plt.show()
