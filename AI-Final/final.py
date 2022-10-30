@@ -9,6 +9,7 @@ from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
+#https://www.meteoblue.com/en/weather/archive/export/basel_switzerland_2661604?daterange=2022-01-01%20-%202022-10-29&domain=NEMSAUTO&min=2022-10-22&max=2022-10-29&params%5B%5D=&params%5B%5D=temp2m&params%5B%5D=&params%5B%5D=&params%5B%5D=precip&params%5B%5D=&params%5B%5D=&params%5B%5D=&params%5B%5D=&params%5B%5D=wind%2Bdir10m&utc_offset=0&timeResolution=hourly&temperatureunit=FAHRENHEIT&velocityunit=MILE_PER_HOUR&energyunit=watts&lengthunit=metric&degree_day_type=10%3B30&gddBase=10&gddLimit=30
 epoc = lambda t : int(mktime(datetime.strptime(t, '%Y%m%dT%H%M%S').timetuple()))
 data = pd.read_csv('dataexport_20221029T025321.csv', sep=',', converters={'Timestamp': epoc})
 
