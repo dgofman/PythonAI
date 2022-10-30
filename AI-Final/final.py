@@ -1,12 +1,15 @@
-from datetime import datetime
-from time import mktime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt 
+import matplotlib.ticker as ticker
+
+from sys import modules
+from time import mktime
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-epoc = lambda t : int(mktime(datetime.strptime(t, "%Y%m%dT%H%M%S").timetuple()))
+epoc = lambda t : int(mktime(datetime.strptime(t, '%Y%m%dT%H%M%S').timetuple()))
 data = pd.read_csv('dataexport_20221029T025321.csv', sep=',', converters={'Timestamp': epoc})
 
 print(data.head(5))
@@ -22,7 +25,6 @@ data_list = list(data.columns)
 print('Temperature (Y):', labels)
 print('Columns (X):', data_list)
 
-data = np.array(data)
 X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.30,random_state=4)
 
 print('Training data shape:', X_train.shape)
@@ -33,19 +35,67 @@ rf = RandomForestRegressor(n_estimators=1000, random_state=4)
 print('Wait...')
 rf.fit(X_train, y_train)
 predictions = rf.predict(X_test)
-print(predictions)
 errors = abs(predictions - y_test)
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(rf.score(X_test, y_test)))
 
 # Visualising the Random Forest Regression results
-x_ax = range(len(y_test))
+
+# sort values by timestamp begin
+order_list= []
+keys = X_test['Timestamp'].keys()
+for i, k in enumerate(keys):
+    order_list.append({'index': i, 'value': k})
+order_list = sorted(order_list, key=lambda item: item['value'])
+
+x_values = []
+y1_values = []
+y2_values = []
+for item in order_list:
+    index = item['index']
+    x_values.append(X_test['Timestamp'].values[index])
+    y1_values.append(y_test[index]) #test data 
+    y2_values.append(predictions[index]) #predicted data
+# sort values by timestamp end
+
+def format(x, _):
+    index = int(x)
+    if index < len(x_values):
+        ts = x_values[index]
+    else:
+        ts = x_values[-1]
+    return datetime.fromtimestamp(ts).strftime('%m/%d/%Y, %H:%M')
+
+length = len(x_values)
+x_ax = range(length)
 plt.figure(figsize=(25, 10))
-plt.plot(x_ax, y_test, linewidth=1, label="original")
-plt.plot(x_ax, predictions, linewidth=1.1, label="predicted")
-plt.title("y-test and y-predicted data")
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
+plt.xlim(0, length)
+plt.plot(x_ax, y1_values, linewidth=1, label='Original')
+plt.plot(x_ax, y2_values, linewidth=1.1, label='Predicted')
+plt.title('Temperature predicted data')
+plt.xlabel('Timestamp')
+plt.ylabel('Temperature')
 plt.legend(loc='best',fancybox=True, shadow=True)
+
+ax = plt.gca()
+ticks_loc = ax.get_xticks()
+ax.xaxis.set_major_locator(ticker.FixedLocator(ticks_loc))
+ax.set_xticklabels(ticks_loc, rotation=45, ha='right', rotation_mode='anchor')
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(format))
+ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda y, _: '{:.1f}°F'.format(y)))
+
 plt.grid(True)
-plt.show()
+plt.tight_layout()
+
+# Skip following lines in the Google Colab and Jupyter Notebook (not interactive)
+if not 'mplcursors' in modules.keys():
+    from mplcursors import cursor 
+    tooltip = cursor(hover=True)
+    tooltip.connect(
+        'add', lambda sel: sel.annotation.set(
+                    text=sel.artist.get_label() + '\n' + 
+                    '{}'.format(ax.format_coord(*sel.target)
+                        .replace('x=', 'Timestamp: ')
+                        .replace('y=', '\nTemperature: '))   
+        ))
+    plt.show()
