@@ -38,8 +38,10 @@ rf = RandomForestRegressor(n_estimators=1000, random_state=4)
 print('Wait...')
 rf.fit(X_train, y_train)
 predictions = rf.predict(X_test)
-errors = abs(predictions - y_test)
-print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+errors1 = abs(predictions[...,0] - y_test['Wind Speed'].values)
+errors2 = abs(predictions[...,1]- y_test['Wind Direction'].values)
+print('Mean Absolute Error (Wind Speed):', round(np.mean(errors1), 2), 'degrees.')
+print('Mean Absolute Error (Wind Direction):', round(np.mean(errors2), 2), 'degrees.')
 print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(rf.score(X_test, y_test)))
 
 # Visualising the Random Forest Regression results
