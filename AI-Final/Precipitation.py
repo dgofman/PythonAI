@@ -97,6 +97,6 @@ if not 'mplcursors' in modules.keys():
                     text=sel.artist.get_label() + '\n' + 
                     '{}'.format(ax.format_coord(*sel.target)
                         .replace('x=', 'Timestamp: ')
-                        .replace('y=', '\nTemperature: '))   
+                        .replace('y=', '\nPrecipitation: '))   
         ))
     plt.show()
