@@ -78,15 +78,6 @@ def format(x, _):
 def compasValue(y):
     return compass[y - (y % 45)] if y > 45 else 'N'
 
-def cursor_annotations(sel):
-    sel.annotation.get_bbox_patch().set(alpha=0.9)
-    sel.annotation.set(
-                    text=sel.artist.get_label() + '\nTimestamp:' + 
-                    datetime.fromtimestamp(x_values[floor(sel.target[0])]).strftime('%m/%d/%Y, %H:%M') +
-                    ('\nWind Speed: {:.0f} mph'.format(sel.target[1]) if 'Speed' in sel.artist.get_label() else
-                    '\nWind Direction: {}'.format(compasValue(sel.target[1]))))
-    
-
 length = len(x_values)
 x_ax = range(length)
 fig, ax = plt.subplots(figsize = (25, 10))
@@ -120,6 +111,14 @@ plt.grid(True)
 plt.tight_layout()
 
 # Skip following lines in the Google Colab and Jupyter Notebook (not interactive)
+def cursor_annotations(sel):
+    sel.annotation.get_bbox_patch().set(alpha=0.9)
+    sel.annotation.set(
+                    text=sel.artist.get_label() + '\nTimestamp:' + 
+                    datetime.fromtimestamp(x_values[floor(sel.target[0])]).strftime('%m/%d/%Y, %H:%M') +
+                    ('\nWind Speed: {:.0f} mph'.format(sel.target[1]) if 'Speed' in sel.artist.get_label() else
+                    '\nWind Direction: {}  ({:.0f}°)'.format(compasValue(sel.target[1]), sel.target[1])))
+
 if not 'mplcursors' in modules.keys():
     from mplcursors import cursor 
     tooltip = cursor(hover=True)
