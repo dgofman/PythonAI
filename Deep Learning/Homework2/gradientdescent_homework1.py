@@ -92,10 +92,11 @@ This function will help us iterate the gradient descent algorithm through all th
 
 np.random.seed(44)
 
-epochs = 100
+epochs = 5000
 learnrate = 0.01
+_max_lost = 0.2
 
-def train(features, targets, epochs, learnrate, graph_lines=False):
+def train(features, targets, epochs, learnrate):
     
     errors = []
     _, n_features = features.shape
@@ -113,17 +114,23 @@ def train(features, targets, epochs, learnrate, graph_lines=False):
         out = output_formula(features, weights, bias)
         loss = np.mean(error_formula(targets, out))
         errors.append(loss)
-        if e % (epochs / 10) == 0:
-            print("\n========== Epoch", e,"==========")
-            if last_loss and last_loss < loss:
-                print("Train loss: ", loss, "  WARNING - Loss Increasing")
-            else:
-                print("Train loss: ", loss)
-            last_loss = loss
-            predictions = out > 0.5
-            accuracy = np.mean(predictions == targets)
-            print("Accuracy: ", accuracy)
-        if graph_lines and e % (epochs / 100) == 0:
+
+        print("\n========== Epoch", e,"==========")
+        if last_loss and last_loss < loss:
+            print("Train loss: ", loss, "  WARNING - Loss Increasing")
+        else:
+            print("Train loss: ", loss)
+        last_loss = loss
+        predictions = out > 0.5
+        accuracy = np.mean(predictions == targets)
+        print("Accuracy: ", accuracy)
+
+        if loss < _max_lost:
+            break
+
+        if e == 0:
+            display(-weights[0]/weights[1], -bias/weights[1], 'red')
+        else:
             display(-weights[0]/weights[1], -bias/weights[1])
             
 
@@ -149,4 +156,4 @@ When we run the function, we'll obtain the following:
 - A plot of the error function. Notice how it decreases as we go through more epochs.
 """
 
-train(X, y, epochs, learnrate, True)
+train(X, y, epochs, learnrate)
