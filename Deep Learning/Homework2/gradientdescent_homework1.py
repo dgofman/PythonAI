@@ -11,11 +11,17 @@ Original file is located at
 In this lab, we'll implement the basic functions of the Gradient Descent algorithm to find the boundary in a small dataset. First, we'll start with some functions that will help us plot and visualize the data.
 """
 
+#import urllib.request
+#urllib.request.urlretrieve('https://raw.githubusercontent.com/dgofman/PythonAI/main/Deep%20Learning/Homework2/data.csv', '/content/data.csv')
+
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 
 #Some helper functions for plotting and drawing lines
+
+plt.figure(figsize=(15, 10))
 
 def plot_points(X, y):
     admitted = X[np.argwhere(y==1)]
@@ -23,11 +29,11 @@ def plot_points(X, y):
     plt.scatter([s[0][0] for s in rejected], [s[0][1] for s in rejected], s = 25, color = 'blue', edgecolor = 'k')
     plt.scatter([s[0][0] for s in admitted], [s[0][1] for s in admitted], s = 25, color = 'red', edgecolor = 'k')
 
-def display(m, b, color='g--'):
+def display(m, b, color, alpha=1):
     plt.xlim(-0.05,1.05)
     plt.ylim(-0.05,1.05)
     x = np.arange(-10, 10, 0.1)
-    plt.plot(x, m*x+b, color)
+    plt.plot(x, m*x+b, color, alpha=alpha)
 
 """## Reading and plotting the data"""
 
@@ -59,7 +65,7 @@ The function that updates the weights
 def sigmoid(x):
     # sigma(𝑥) = 1 / (1 + 𝑒−𝑥)
     return 1 / (1 + np.exp(-x)) # https://www.digitalocean.com/community/tutorials/sigmoid-activation-function-python
-
+    
 # Output (prediction) formula
 def output_formula(features, weights, bias):
     # 𝑤1𝑥1 + 𝑤2𝑥2
@@ -92,9 +98,8 @@ This function will help us iterate the gradient descent algorithm through all th
 
 np.random.seed(44)
 
-epochs = 5000
+epochs = 3000
 learnrate = 0.01
-_max_lost = 0.2
 
 def train(features, targets, epochs, learnrate):
     
@@ -102,6 +107,10 @@ def train(features, targets, epochs, learnrate):
     _, n_features = features.shape
     last_loss = None
     weights = np.random.normal(scale=1 / n_features**.5, size=n_features)
+    best_weights = []
+    best_epochs = 0
+    best_accuracy = 0
+    best_bias = 0
     bias = 0
     for e in range(epochs):
         #del_w = np.zeros(weights.shape)
@@ -115,39 +124,43 @@ def train(features, targets, epochs, learnrate):
         loss = np.mean(error_formula(targets, out))
         errors.append(loss)
 
-        print("\n========== Epoch", e,"==========")
-        if last_loss and last_loss < loss:
-            print("Train loss: ", loss, "  WARNING - Loss Increasing")
-        else:
-            print("Train loss: ", loss)
-        last_loss = loss
         predictions = out > 0.5
         accuracy = np.mean(predictions == targets)
-        print("Accuracy: ", accuracy)
+        #print("Accuracy: ", accuracy)
 
-        if loss < _max_lost:
-            break
-
+        if accuracy >= best_accuracy:
+            best_accuracy = accuracy
+            best_weights = weights
+            best_bias = bias
+            best_epochs = e
+            
         if e == 0:
             display(-weights[0]/weights[1], -bias/weights[1], 'red')
-        else:
-            display(-weights[0]/weights[1], -bias/weights[1])
+        elif last_loss - loss > 0.001:
+            display(-weights[0]/weights[1], -bias/weights[1], 'green', alpha=.2)
+
+        last_loss = loss
             
 
     # Plotting the solution boundary
-    plt.title("Solution boundary")
+    plt.title("Iterations: {} / {}, Last Accuracy: {}, Best Accuracy: {}".format(epochs, best_epochs, accuracy, best_accuracy))
+
+    print("Last Accuracy: ", accuracy)
     display(-weights[0]/weights[1], -bias/weights[1], 'black')
 
+    print("Best Accuracy: ", best_accuracy)
+    display(-best_weights[0]/best_weights[1], -best_bias/best_weights[1], 'magenta')
+
     # Plotting the data
+    plt.legend(handles=[
+        mpatches.Patch(color='red', label='Start Line'),
+        mpatches.Patch(color='green', label='Last Loss Line'),
+        mpatches.Patch(color='black', label='Last Accuracy Line'),
+        mpatches.Patch(color='magenta', label='Best Accuracy Line')
+    ])
     plot_points(features, targets)
     plt.show()
 
-    # Plotting the error
-    plt.title("Error Plot")
-    plt.xlabel('Number of epochs')
-    plt.ylabel('Error')
-    plt.plot(errors)
-    plt.show()
 
 """## Time to train the algorithm!
 When we run the function, we'll obtain the following:
