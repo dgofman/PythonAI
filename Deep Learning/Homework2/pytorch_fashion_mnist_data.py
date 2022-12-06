@@ -45,8 +45,6 @@ trainloader = torch.utils.data.DataLoader(trainset, sampler=train_sample, batch_
 validloader = torch.utils.data.DataLoader(trainset, sampler=valid_sample, batch_size=64)
 testloader = torch.utils.data.DataLoader(testset, batch_size=64, shuffle=True)
 
-trainset
-
 """# **Visualize a Batch of Training Data**"""
 
 trainloader
@@ -56,19 +54,18 @@ import matplotlib.pyplot as plt
 # %matplotlib inline
 
 dataiter = iter(trainloader)
-print(dataiter)
-images, labels = dataiter.next()
-
+images, labels = next(dataiter)
 
 fig = plt.figure(figsize=(15,5))
 for idx in np.arange(20):
   # xticks=[], yticks=[] is empty to print the images without any ticks around them
   #np.sqeeze : Remove single-dimensional entries from the shape of an array.
-  ax = fig.add_subplot(4, 20/4, idx+1, xticks=[], yticks=[])
-  ax.imshow(np.squeeze(images[idx]), cmap='gray')
+  fig.add_subplot(4, 5, idx+1)
+  plt.axis("off")
+  plt.imshow(np.squeeze(images[idx]), cmap='gray')
    # .item() gets the value contained in a Tensor
-  ax.set_title(labels[idx].item())
-  fig.tight_layout()
+  plt.title(labels[idx].item())
+  plt.tight_layout()
 
 """# **Building the Network**"""
 
@@ -95,9 +92,6 @@ model = Classifier()
 #defining the loss function
 criterion = nn.NLLLoss()
 optimizer = optim.SGD(model.parameters(), lr=0.01)
-
-from timeit import default_timer   
-start = default_timer()
 
 valid_loss_min = np.Inf #using this high value to make sure the update the weight first time
 epochs = 5
@@ -136,8 +130,6 @@ for e in range(epochs):
       print('validation loss decreased({:.6f} -->{:.6f}). Saving Model ...'.format(valid_loss_min, valid_loss))
       torch.save(model.state_dict(), 'model.pt')
       valid_loss_min = valid_loss
-
-print("Training Time:", default_timer()-start)   
 
 plt.plot(train_losses, label='Train Loss')
 plt.plot(valid_losses, label='Valid Loss')
@@ -206,7 +198,7 @@ print('\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (
 
 # obtain one batch of test images
 dataiter = iter(testloader)
-images, labels = dataiter.next()
+images, labels = next(dataiter)
 
 # get sample outputs
 output = model(images)
@@ -218,8 +210,10 @@ images = images.numpy()
 # plot the images in the batch, along with predicted and true labels
 fig = plt.figure(figsize=(25, 4))
 for idx in np.arange(20):
-    ax = fig.add_subplot(2, 20/2, idx+1, xticks=[], yticks=[])
-    ax.imshow(np.squeeze(images[idx]), cmap='gray')
-    ax.set_title("{} ({})".format(str(preds[idx].item()), str(labels[idx].item())),
+    fig.add_subplot(2, 10, idx+1)
+    plt.axis("off")
+    plt.imshow(np.squeeze(images[idx]), cmap='gray')
+    plt.title("{} ({})".format(str(preds[idx].item()), str(labels[idx].item())),
                  color=("green" if preds[idx]==labels[idx] else "red"))
 
+plt.show()
